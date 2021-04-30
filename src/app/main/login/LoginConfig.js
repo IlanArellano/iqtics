@@ -1,5 +1,5 @@
 import { authRoles } from 'app/auth';
-import Login from '../pages/auth/login-3/Login3Page';
+import Login from '../pages/auth/login-3/';
 
 const LoginConfig = {
 	settings: {
