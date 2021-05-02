@@ -6,6 +6,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -65,15 +66,62 @@ function UserMenu(props) {
 					<>
 						<MenuItem component={Link} to="/login" role="button">
 							<ListItemIcon className="min-w-40">
-								<Icon>lock</Icon>
+								<Icon>person_outline</Icon>
 							</ListItemIcon>
-							<ListItemText primary="Login" />
+							<ListItemText primary="Cuenta" />
 						</MenuItem>
-						<MenuItem component={Link} to="/register" role="button">
+						<MenuItem component={Link} to="/logout" role="button">
 							<ListItemIcon className="min-w-40">
-								<Icon>person_add</Icon>
+								<Icon>notifications</Icon>
 							</ListItemIcon>
-							<ListItemText primary="Register" />
+							<ListItemText primary="Notificaciones" />
+						</MenuItem>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>help_outline</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Grupos" />
+						</MenuItem>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>time_to_leave</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Conductores" />
+						</MenuItem>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>storage</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Atributos Calculados" />
+						</MenuItem>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>login</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Salir" />
+						</MenuItem>
+						<div className="my-24 flex items-center justify-center">
+							<Divider className="w-32" />
+							<span className="mx-8 font-semibold">ADMINISTRADOR</span>
+							<Divider className="w-32" />
+						</div>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>dns</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Servidor" />
+						</MenuItem>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>people_alt</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Usuarios" />
+						</MenuItem>
+						<MenuItem component={Link} to="/logout" role="button">
+							<ListItemIcon className="min-w-40">
+								<Icon>bar_chart</Icon>
+							</ListItemIcon>
+							<ListItemText primary="Estadísticas" />
 						</MenuItem>
 					</>
 				) : (

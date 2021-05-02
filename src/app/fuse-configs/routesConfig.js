@@ -30,7 +30,7 @@ const routes = [
 	...FuseUtils.generateRoutesFromConfigs(routeConfigs, null),
 	{
 		path: '/',
-		exact: true,
+		exact: false,
 		component: () => <Redirect to="/app/iqtics/map" />
 	},
 	{

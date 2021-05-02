@@ -32,7 +32,7 @@ function Logo() {
 			<Link to="/">
 				<div className="flex items-center">
 					<img className="logo-icon w-24 h-24" src="assets/images/logos/fuse.svg" alt="logo" />
-					<Typography className="text-16 leading-none mx-12 font-medium logo-text" color="#ffffff">
+					<Typography className="text-16 leading-none mx-12 font-medium logo-text" color="textPrimary">
 						IQTRACK
 					</Typography>
 				</div>

@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import cardedLayoutRoutes from './page-layouts/carded/cardedLayoutRoutes';
 import simpleLayoutRoutes from './page-layouts/simple/simpleLayoutRoutes';
+import Example from './helper-classes/HelperClassesUI';
 
 const UserInterfaceConfig = {
 	routes: [
@@ -21,6 +22,10 @@ const UserInterfaceConfig = {
 		{
 			path: '/ui/helper-classes',
 			component: lazy(() => import('./helper-classes/HelperClassesUI'))
+		}, // iqRoutes
+		{
+			path: '/app/iqtics/map/:id',
+			component: Example
 		}
 	]
 };

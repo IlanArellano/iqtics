@@ -171,12 +171,6 @@ function Login3Page() {
 								Iniciar Sesión
 							</Button>
 						</form>
-
-						<div className="my-24 flex items-center justify-center">
-							<Divider className="w-32" />
-							<span className="mx-8 font-semibold">OR</span>
-							<Divider className="w-32" />
-						</div>
 					</CardContent>
 
 					<div className="flex flex-col items-center justify-center pb-32">
@@ -204,8 +198,7 @@ function Login3Page() {
 
 						<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.3 } }}>
 							<Typography variant="subtitle1" color="inherit" className="mt-32 font-medium">
-								Powerful and professional admin template for Web Applications, CRM, CMS, Admin Panels
-								and more.
+								Sistema de rastreo GPS y Telemetría.
 							</Typography>
 						</motion.div>
 					</div>

@@ -8,6 +8,7 @@ import UserMenu from 'app/fuse-layouts/shared-components/UserMenu';
 import QuickPanelToggleButton from 'app/fuse-layouts/shared-components/quickPanel/QuickPanelToggleButton';
 import NotificationPanelToggleButton from '../../shared-components/notificationPanel/NotificationPanelToggleButton';
 import ChatPanelToggleButton from '../../shared-components/chatPanel/ChatPanelToggleButton';
+import Reports from '../../../main/iqtrackComponents/preferences';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -34,6 +35,8 @@ function NavbarLayout2(props) {
 					<Navigation className="w-full" layout="horizontal" />
 				</FuseScrollbars>
 				<div className="flex items-center px-8 h-full overflow-x-auto">
+					<Reports />
+
 					<QuickPanelToggleButton />
 
 					<NotificationPanelToggleButton />

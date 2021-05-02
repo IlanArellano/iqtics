@@ -3,7 +3,7 @@ import Hidden from '@material-ui/core/Hidden';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import IqMap from '../../../iqtrackComponents/map';
 import SidebarHeader from '../../../iqtrackComponents/SidebarHeader';
 import SidebarCarsContent from '../../../iqtrackComponents/SidebarCarsContent';
@@ -15,6 +15,8 @@ const useStyles = makeStyles({
 function SimpleLeftSidebar2Sample() {
 	const classes = useStyles();
 	const pageLayout = useRef(null);
+	const [display, setDisplay] = useState('');
+	const [open, setOpen] = useState(false);
 
 	const ToggleButton = () => {
 		return (
