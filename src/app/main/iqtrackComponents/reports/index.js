@@ -14,8 +14,8 @@ import Grafica from './Grafica';
 const useStyles = makeStyles(theme => ({
 	paper: {
 		position: 'absolute',
-		minwidth: '70%',
-		maxHeight: '75vh',
+		minWidth: '70%',
+		minHeight: '60vh',
 		backgroundColor: '#000000',
 		border: '2px solid #000',
 		boxShadow: theme.shadows[5]
@@ -62,8 +62,7 @@ function ReportsModal({ display, open, setOpen }) {
 				style={{
 					top: `50%`,
 					left: `50%`,
-					transform: `translate(-50%, -50%)`,
-					overflow: 'scroll'
+					transform: `translate(-50%, -50%)`
 				}}
 				className={classes.paper}
 			>

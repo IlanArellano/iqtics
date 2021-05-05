@@ -5,13 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import RouteTable from './components/Table';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -27,9 +21,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	selectEmpty: {
 		marginTop: theme.spacing(2)
-	},
-	table: {
-		minWidth: '100%'
 	},
 	containTable: {
 		width: '100%',
@@ -54,36 +45,7 @@ export default function ReportRoute() {
 		setDispositivo(e.target.value);
 	};
 
-	function createData(name, calories, fat, carbs, protein) {
-		return { name, calories, fat, carbs, protein };
-	}
-
-	const rows = [
-		createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-		createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-		createData('Eclair', 262, 16.0, 24, 6.0),
-		createData('Cupcake', 305, 3.7, 67, 4.3),
-		createData('1', 356, 16.0, 49, 3.9),
-		createData('2', 356, 16.0, 49, 3.9),
-		createData('3', 356, 16.0, 49, 3.9),
-		createData('4', 356, 16.0, 49, 3.9),
-		createData('5', 356, 16.0, 49, 3.9),
-		createData('6', 356, 16.0, 49, 3.9),
-		createData('7', 356, 16.0, 49, 3.9),
-		createData('8', 356, 16.0, 49, 3.9),
-		createData('9', 356, 16.0, 49, 3.9),
-		createData('10', 356, 16.0, 49, 3.9),
-		createData('11', 356, 16.0, 49, 3.9),
-		createData('12', 356, 16.0, 49, 3.9),
-		createData('13', 356, 16.0, 49, 3.9),
-		createData('14', 356, 16.0, 49, 3.9),
-		createData('15', 356, 16.0, 49, 3.9),
-		createData('16', 356, 16.0, 49, 3.9),
-		createData('17', 356, 16.0, 49, 3.9),
-		createData('18', 356, 16.0, 49, 3.9),
-		createData('19', 356, 16.0, 49, 3.9),
-		createData('20', 356, 16.0, 49, 3.9)
-	];
+	const columns = ['Hora', 'Latitud', 'Longitud', 'Velocidad', 'Dirección'];
 
 	return (
 		<div className={classes.container}>
@@ -139,34 +101,7 @@ export default function ReportRoute() {
 				</FormControl>
 			</div>
 			<div className={classes.containTable}>
-				<TableContainer component={Paper}>
-					<Table className={classes.table} aria-label="simple table">
-						<TableHead>
-							<TableRow>
-								<TableCell>Hora</TableCell>
-								<TableCell align="right">Latitud</TableCell>
-								<TableCell align="right">Longitud</TableCell>
-								<TableCell align="right">Velocidad</TableCell>
-								<TableCell align="right">Dirección</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{rows.map(row => {
-								return (
-									<TableRow key={row.name}>
-										<TableCell component="th" scope="row">
-											{row.name}
-										</TableCell>
-										<TableCell align="right">{row.calories}</TableCell>
-										<TableCell align="right">{row.fat}</TableCell>
-										<TableCell align="right">{row.carbs}</TableCell>
-										<TableCell align="right">{row.protein}</TableCell>
-									</TableRow>
-								);
-							})}
-						</TableBody>
-					</Table>
-				</TableContainer>
+				<RouteTable columns={columns} />
 			</div>
 		</div>
 	);
