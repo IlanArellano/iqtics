@@ -8,7 +8,7 @@ const lightText = {
 };
 
 const darkText = {
-	primary: 'rgb(255,255,255)',
+	primary: 'rgb(0,0,0)',
 	secondary: 'rgb(229, 231, 235)',
 	disabled: 'rgb(156, 163, 175)'
 };

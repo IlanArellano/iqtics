@@ -48,10 +48,6 @@ function SimpleLeftSidebar2Sample() {
 			leftSidebarContent={
 				<div className="p-24">
 					<SidebarCarsContent />
-					<SidebarCarsContent />
-					<SidebarCarsContent />
-					<SidebarCarsContent />
-					<SidebarCarsContent />
 				</div>
 			}
 			innerScroll

@@ -1,4 +1,6 @@
 import { lazy } from 'react';
+import Map from 'app/main/iqtrackComponents/ProtectMap';
+import MapContent from './left-sidebar-2';
 
 const simpleLayoutRoutes = [
 	{
@@ -11,7 +13,11 @@ const simpleLayoutRoutes = [
 	},
 	{
 		path: '/app/iqtics/map',
-		component: lazy(() => import('./left-sidebar-2'))
+		component: () => (
+			<Map>
+				<MapContent />
+			</Map>
+		)
 	},
 	{
 		path: '/ui/page-layouts/simple/left-sidebar-3',

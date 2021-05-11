@@ -9,6 +9,7 @@ import pagesConfigs from 'app/main/pages/pagesConfigs';
 import RegisterConfig from 'app/main/register/RegisterConfig';
 import UserInterfaceConfig from 'app/main/user-interface/UserInterfaceConfig';
 import { Redirect } from 'react-router-dom';
+import RedirectToMap from './RedirectToMap';
 
 const routeConfigs = [
 	...appsConfigs,
@@ -31,7 +32,7 @@ const routes = [
 	{
 		path: '/',
 		exact: false,
-		component: () => <Redirect to="/app/iqtics/map" />
+		component: RedirectToMap
 	},
 	{
 		component: () => <Redirect to="/pages/errors/error-404" />

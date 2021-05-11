@@ -6,17 +6,18 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Checkbox from '@material-ui/core/Checkbox';
-import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { useState } from 'react';
 import clsx from 'clsx';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import * as yup from 'yup';
 import _ from '@lodash';
+import useUser from 'app/main/iqtrackComponents/hooks/useUser';
 
 const useStyles = makeStyles(theme => ({
 	root: {},
@@ -27,6 +28,10 @@ const useStyles = makeStyles(theme => ({
 			0.5
 		)} 100%)`,
 		color: theme.palette.primary.contrastText
+	},
+	error: {
+		color: 'red',
+		textAlign: 'center'
 	}
 }));
 
@@ -45,6 +50,9 @@ const defaultValues = {
 };
 
 function Login3Page() {
+	const { login } = useUser();
+	const history = useHistory();
+	const [loginError, setLoginError] = useState('');
 	const classes = useStyles();
 
 	const { control, formState, handleSubmit, reset } = useForm({
@@ -55,8 +63,32 @@ function Login3Page() {
 
 	const { isValid, dirtyFields, errors } = formState;
 
-	function onSubmit(e) {
-		console.log(e);
+	async function onSubmit(keys) {
+		delete keys.remember;
+		let formBody = [];
+		// eslint-disable-next-line no-plusplus
+		for (let i = 0; i < Object.keys(keys).length; i++) {
+			const encodedKey = encodeURIComponent(Object.keys(keys)[i]);
+			const encodedValue = encodeURIComponent(Object.values(keys)[i]);
+			formBody.push(`${encodedKey}=${encodedValue}`);
+		}
+		formBody = formBody.join('&');
+		const querySession = await fetch(`https://${process.env.REACT_APP_API_URL}/api/session`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+			},
+			body: formBody
+		});
+		console.log(querySession);
+		if (querySession.ok) {
+			login({ user: keys.email, password: keys.password });
+			history.push('/app/iqtics/map');
+		} else if (!querySession.ok && querySession.status === 401) {
+			setLoginError('Usuario o contraseña no válidos');
+		} else {
+			setLoginError('No se ha podido conectar con el servidor');
+		}
 		reset(defaultValues);
 	}
 
@@ -104,6 +136,7 @@ function Login3Page() {
 							className="flex flex-col justify-center w-full"
 							onSubmit={handleSubmit(onSubmit)}
 						>
+							{loginError && <Typography className={classes.error}>{loginError}</Typography>}
 							<Controller
 								name="email"
 								control={control}

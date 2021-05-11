@@ -16,12 +16,12 @@ const useStyles = makeStyles(theme => ({
 	container: {
 		minHeight: 400,
 		maxHeight: 500,
-		overflow: 'scroll',
-		padding: theme.spacing(1)
+		padding: theme.spacing(1),
+		overflow: 'scroll'
 	}
 }));
 
-export default function ReportTable({ columns }) {
+export default function UsersTable({ columns }) {
 	const classes = useStyles();
 
 	function createData(name, calories, fat, carbs, protein) {

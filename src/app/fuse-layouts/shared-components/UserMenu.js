@@ -1,6 +1,6 @@
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
+import { makeStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -8,42 +8,56 @@ import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { logoutUser } from 'app/auth/store/userSlice';
+import { Link, useHistory } from 'react-router-dom';
+import useUser from 'app/main/iqtrackComponents/hooks/useUser';
+import UserModal from '../../main/iqtrackComponents/userOptions';
+
+const useStyles = makeStyles(theme => ({
+	color: {
+		color: theme.palette.text.secondary
+	}
+}));
 
 function UserMenu(props) {
-	const dispatch = useDispatch();
-	const user = useSelector(({ auth }) => auth.user);
+	const classes = useStyles();
+	const [open, setOpen] = useState(false);
+	const [display, setDisplay] = useState('');
 
 	const [userMenu, setUserMenu] = useState(null);
+	const history = useHistory();
+	const { logout } = useUser();
 
 	const userMenuClick = event => {
 		setUserMenu(event.currentTarget);
+	};
+
+	const switchOpen = name => {
+		setOpen(true);
+		setDisplay(name);
 	};
 
 	const userMenuClose = () => {
 		setUserMenu(null);
 	};
 
+	const handleLogOut = () => {
+		logout();
+		history.push('/login');
+	};
+
 	return (
 		<>
+			{open && <UserModal display={display} open={open} setOpen={setOpen} />}
 			<Button className="min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6" onClick={userMenuClick}>
 				<div className="hidden md:flex flex-col mx-4 items-end">
-					<Typography component="span" className="font-semibold flex">
-						{user.data.displayName}
+					<Typography component="span" className="font-semibold flex" color="textSecondary">
+						Nombre
 					</Typography>
 					<Typography className="text-11 font-medium capitalize" color="textSecondary">
-						{user.role.toString()}
-						{(!user.role || (Array.isArray(user.role) && user.role.length === 0)) && 'Guest'}
+						Rol
 					</Typography>
 				</div>
-
-				{user.data.photoURL ? (
-					<Avatar className="md:mx-4" alt="user photo" src={user.data.photoURL} />
-				) : (
-					<Avatar className="md:mx-4">{user.data.displayName[0]}</Avatar>
-				)}
+				<Icon className={classes.color}>arrow_drop_down</Icon>
 			</Button>
 
 			<Popover
@@ -62,95 +76,65 @@ function UserMenu(props) {
 					paper: 'py-8'
 				}}
 			>
-				{!user.role || user.role.length === 0 ? (
-					<>
-						<MenuItem component={Link} to="/login" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>person_outline</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Cuenta" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>notifications</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Notificaciones" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>help_outline</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Grupos" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>time_to_leave</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Conductores" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>storage</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Atributos Calculados" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>login</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Salir" />
-						</MenuItem>
-						<div className="my-24 flex items-center justify-center">
-							<Divider className="w-32" />
-							<span className="mx-8 font-semibold">ADMINISTRADOR</span>
-							<Divider className="w-32" />
-						</div>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>dns</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Servidor" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>people_alt</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Usuarios" />
-						</MenuItem>
-						<MenuItem component={Link} to="/logout" role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>bar_chart</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Estadísticas" />
-						</MenuItem>
-					</>
-				) : (
-					<>
-						<MenuItem component={Link} to="/pages/profile" onClick={userMenuClose} role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>account_circle</Icon>
-							</ListItemIcon>
-							<ListItemText primary="My Profile" />
-						</MenuItem>
-						<MenuItem component={Link} to="/apps/mail" onClick={userMenuClose} role="button">
-							<ListItemIcon className="min-w-40">
-								<Icon>mail</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Inbox" />
-						</MenuItem>
-						<MenuItem
-							onClick={() => {
-								dispatch(logoutUser());
-								userMenuClose();
-							}}
-						>
-							<ListItemIcon className="min-w-40">
-								<Icon>exit_to_app</Icon>
-							</ListItemIcon>
-							<ListItemText primary="Logout" />
-						</MenuItem>
-					</>
-				)}
+				<MenuItem component={null} onClick={() => switchOpen('Cuenta')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>person_outline</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Cuenta" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={() => switchOpen('Notificaciones')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>notifications</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Notificaciones" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={() => switchOpen('Grupos')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>help_outline</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Grupos" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={() => switchOpen('Conductores')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>time_to_leave</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Conductores" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={() => switchOpen('Atributos Calculados')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>storage</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Atributos Calculados" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={handleLogOut} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>login</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Salir" className={classes.color} />
+				</MenuItem>
+				<div className="my-24 flex items-center justify-center">
+					<Divider className="w-32" />
+					<span className={`mx-8 font-semibold ${classes.color}`}>ADMINISTRADOR</span>
+					<Divider className="w-32" />
+				</div>
+				<MenuItem component={null} onClick={() => switchOpen('Servidor')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>dns</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Servidor" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={() => switchOpen('Usuarios')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>people_alt</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Usuarios" className={classes.color} />
+				</MenuItem>
+				<MenuItem component={null} onClick={() => switchOpen('Estadísticas')} role="button">
+					<ListItemIcon className="min-w-40">
+						<Icon>bar_chart</Icon>
+					</ListItemIcon>
+					<ListItemText primary="Estadísticas" className={classes.color} />
+				</MenuItem>
 			</Popover>
 		</>
 	);

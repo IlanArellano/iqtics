@@ -4,18 +4,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import Ruta from './Route';
-import Eventos from './Events';
-import Viajes from './Viajes';
-import Paradas from './Paradas';
-import Resumen from './Resume';
-import Grafica from './Grafica';
+import Cuenta from './Cuenta';
+import Grupos from './Grupos';
+import Users from './admin/Users';
 
 const useStyles = makeStyles(theme => ({
 	paper: {
 		position: 'absolute',
-		minWidth: '70%',
-		minHeight: '60vh',
+		minWidth: '80vw',
+		minHeight: '50vh',
+		maxHeight: '90vh',
 		backgroundColor: '#ffffff',
 		border: '2px solid #000',
 		boxShadow: theme.shadows[5]
@@ -31,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-function ReportsModal({ display, open, setOpen }) {
+function OptionsModal({ display, open, setOpen }) {
 	const classes = useStyles();
 
 	const handleClose = () => {
@@ -40,18 +38,22 @@ function ReportsModal({ display, open, setOpen }) {
 
 	const SetDisplay = () => {
 		switch (display) {
-			case 'Ruta':
-				return <Ruta />;
-			case 'Eventos':
-				return <Eventos />;
-			case 'Viajes':
-				return <Viajes />;
-			case 'Paradas':
-				return <Paradas />;
-			case 'Resumen':
-				return <Resumen />;
-			case 'Grafica':
-				return <Grafica />;
+			case 'Cuenta':
+				return <Cuenta />;
+			case 'Notificaciones':
+				return <Cuenta />;
+			case 'Grupos':
+				return <Grupos />;
+			case 'Conductores':
+				return <Cuenta />;
+			case 'Atributos Calculados':
+				return <Cuenta />;
+			case 'Servidor':
+				return <Cuenta />;
+			case 'Usuarios':
+				return <Users />;
+			case 'Estadísticas':
+				return <Cuenta />;
 			default:
 				return <div>Error</div>;
 		}
@@ -83,7 +85,7 @@ function ReportsModal({ display, open, setOpen }) {
 
 export default function ModalPortal({ display, open, setOpen }) {
 	return ReactDOM.createPortal(
-		<ReportsModal display={display} open={open} setOpen={setOpen} />,
+		<OptionsModal display={display} open={open} setOpen={setOpen} />,
 		document.getElementById('Modals')
 	);
 }
