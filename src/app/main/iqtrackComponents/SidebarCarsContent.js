@@ -37,10 +37,8 @@ export default function SidebarCarsContent() {
 				}
 			})
 			.catch(console.log);
-		return {
-			devices: []
-		};
-	}, [getToken]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const userMenuClick = event => {
 		setUserMenu(event.currentTarget);

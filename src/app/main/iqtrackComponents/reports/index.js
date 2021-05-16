@@ -14,7 +14,7 @@ import Grafica from './Grafica';
 const useStyles = makeStyles(theme => ({
 	paper: {
 		position: 'absolute',
-		minWidth: '70%',
+		minWidth: '85%',
 		minHeight: '60vh',
 		backgroundColor: '#ffffff',
 		border: '2px solid #000',

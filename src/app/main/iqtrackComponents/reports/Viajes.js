@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
-import ViajesTable from './components/Table';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import moment from 'moment';
+import ReportFilter, { selectDate } from './services/Reports';
+import getDevices from './services/getDevices';
+import ViajesTable from './components/TableViajes';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -29,13 +34,24 @@ const useStyles = makeStyles(theme => ({
 	option: {
 		display: 'flex',
 		flexDirection: 'column'
+	},
+	load: {
+		marginTop: theme.spacing(2),
+		display: 'flex',
+		justifyContent: 'center'
 	}
 }));
 
 export default function ViajesRoute() {
 	const classes = useStyles();
+	const [selectDevice, setSelectDevice] = useState([]);
 	const [route, setRoute] = useState('');
-	const [dispositivo, setDispositivo] = useState('');
+	const [dispositivo, setDispositivo] = useState('Hoy');
+	const [rows, setRows] = useState([]);
+	const [from, setFrom] = useState(moment().subtract(1, 'hour'));
+	const [to, setTo] = useState(moment());
+	const [loading, setLoading] = useState(false);
+	const [exportLoader, setExportLoader] = useState(false);
 
 	const handleRoute = e => {
 		setRoute(e.target.value);
@@ -44,6 +60,56 @@ export default function ViajesRoute() {
 	const handleDevice = e => {
 		setDispositivo(e.target.value);
 	};
+
+	const handleMostrar = async () => {
+		setLoading(true);
+		const Dateform = selectDate(dispositivo, from, to);
+		const reports = await ReportFilter({
+			endPoint: 'trips',
+			deviceId: route,
+			from: Dateform.from.toISOString(),
+			to: Dateform.to.toISOString(),
+			mail: false,
+			type: 'json'
+		});
+		if (reports) {
+			setRows(reports);
+		}
+		setLoading(false);
+	};
+
+	const handleExportar = async () => {
+		setExportLoader(true);
+		const Dateform = selectDate(dispositivo, from, to);
+		const exportar = await ReportFilter({
+			endPoint: 'trips',
+			deviceId: route,
+			from: Dateform.from.toISOString(),
+			to: Dateform.to.toISOString(),
+			mail: false,
+			type: 'export'
+		});
+		if (exportar.success) {
+			setExportLoader(false);
+		}
+		if (exportar.error) {
+			// eslint-disable-next-line no-alert
+			alert(exportar.error);
+			setExportLoader(false);
+		}
+	};
+
+	useEffect(() => {
+		const setDevices = async () => {
+			const res = await getDevices();
+			if (res.length) {
+				setSelectDevice(res);
+			} else {
+				setSelectDevice([]);
+			}
+		};
+		setDevices();
+	}, []);
 
 	const columns = [
 		'Hora',
@@ -72,9 +138,17 @@ export default function ViajesRoute() {
 							onChange={handleRoute}
 							label="Dispositivos"
 						>
-							<MenuItem value={10}>Ten</MenuItem>
-							<MenuItem value={20}>Twenty</MenuItem>
-							<MenuItem value={30}>Thirty</MenuItem>
+							{selectDevice.length > 0 ? (
+								selectDevice.map(device => {
+									return (
+										<MenuItem key={device.id} value={device.id}>
+											{device.name}
+										</MenuItem>
+									);
+								})
+							) : (
+								<MenuItem value={1}>No content</MenuItem>
+							)}
 						</Select>
 					</FormControl>
 					<FormControl variant="outlined" className={classes.formControl}>
@@ -98,20 +172,45 @@ export default function ViajesRoute() {
 						</Select>
 					</FormControl>
 				</div>
+				<div>
+					{dispositivo === 'Personalizado' && (
+						<>
+							<TextField
+								margin="normal"
+								variant="filled"
+								label="Desde"
+								type="datetime-local"
+								value={from.format(moment.HTML5_FMT.DATETIME_LOCAL)}
+								onChange={e => setFrom(moment(e.target.value, moment.HTML5_FMT.DATETIME_LOCAL))}
+								fullWidth
+							/>
+							<TextField
+								margin="normal"
+								variant="filled"
+								label="Desde"
+								type="datetime-local"
+								value={to.format(moment.HTML5_FMT.DATETIME_LOCAL)}
+								onChange={e => setTo(moment(e.target.value, moment.HTML5_FMT.DATETIME_LOCAL))}
+								fullWidth
+							/>
+						</>
+					)}
+				</div>
 				<FormControl className={classes.buttons}>
-					<Button variant="outlined" color="primary">
+					<Button variant="outlined" color="primary" disabled={!route} onClick={() => handleMostrar()}>
 						Mostrar
 					</Button>
-					<Button variant="outlined" color="primary">
+					<Button variant="outlined" color="primary" disabled={!route} onClick={() => handleExportar()}>
 						Exportar
 					</Button>
-					<Button variant="outlined" color="primary">
+					<Button variant="outlined" color="primary" disabled={!route}>
 						Reporte por correo
 					</Button>
+					<div className={classes.load}>{exportLoader && <CircularProgress />}</div>
 				</FormControl>
 			</div>
 			<div className={classes.containTable}>
-				<ViajesTable columns={columns} />
+				<ViajesTable rows={rows} loading={loading} />
 			</div>
 		</div>
 	);

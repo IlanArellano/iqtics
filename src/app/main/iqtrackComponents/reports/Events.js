@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
-import EventTable from './components/Table';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import moment from 'moment';
+import getDevices from './services/getDevices';
+import ReportFilter, { selectDate } from './services/Reports';
+import EventTable from './components/TableEvent';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -13,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	formControl: {
 		margin: theme.spacing(1),
-		minWidth: 120
+		width: 120
 	},
 	buttons: {
 		minWidth: 280,
@@ -29,14 +34,25 @@ const useStyles = makeStyles(theme => ({
 	option: {
 		display: 'flex',
 		flexDirection: 'column'
+	},
+	load: {
+		marginTop: theme.spacing(2),
+		display: 'flex',
+		justifyContent: 'center'
 	}
 }));
 
 export default function EventRoute() {
 	const classes = useStyles();
 	const [route, setRoute] = useState('');
-	const [dispositivo, setDispositivo] = useState('');
-	const [event, setEvent] = useState('');
+	const [dispositivo, setDispositivo] = useState('Hoy');
+	const [event, setEvent] = useState(['allEvents']);
+	const [selectEvent, setSelectEvent] = useState([]);
+	const [rows, setRows] = useState([]);
+	const [from, setFrom] = useState(moment().subtract(1, 'hour'));
+	const [to, setTo] = useState(moment());
+	const [loading, setLoading] = useState(false);
+	const [exportLoader, setExportLoader] = useState(false);
 
 	const handleRoute = e => {
 		setRoute(e.target.value);
@@ -50,7 +66,57 @@ export default function EventRoute() {
 		setEvent(e.target.value);
 	};
 
-	const columns = ['Hora', 'Tipo', 'Geocerca', 'Mantenimientos'];
+	const handleMostrar = async () => {
+		setLoading(true);
+		const Dateform = selectDate(dispositivo, from, to);
+		const reports = await ReportFilter({
+			endPoint: 'events',
+			deviceId: route,
+			from: Dateform.from.toISOString(),
+			to: Dateform.to.toISOString(),
+			mail: false,
+			type: 'json',
+			event
+		});
+		if (reports) {
+			setRows(reports);
+		}
+		setLoading(false);
+	};
+
+	const handleExportar = async () => {
+		setExportLoader(true);
+		const Dateform = selectDate(dispositivo, from, to);
+		const exportar = await ReportFilter({
+			endPoint: 'events',
+			deviceId: route,
+			from: Dateform.from.toISOString(),
+			to: Dateform.to.toISOString(),
+			mail: false,
+			type: 'export',
+			event
+		});
+		if (exportar.success) {
+			setExportLoader(false);
+		}
+		if (exportar.error) {
+			// eslint-disable-next-line no-alert
+			alert(exportar.error);
+			setExportLoader(false);
+		}
+	};
+
+	useEffect(() => {
+		const setDevices = async () => {
+			const res = await getDevices();
+			if (res.length) {
+				setSelectEvent(res);
+			} else {
+				setSelectEvent([]);
+			}
+		};
+		setDevices();
+	}, []);
 
 	return (
 		<div className={classes.container}>
@@ -67,9 +133,17 @@ export default function EventRoute() {
 							onChange={handleRoute}
 							label="Dispositivos"
 						>
-							<MenuItem value={10}>Ten</MenuItem>
-							<MenuItem value={20}>Twenty</MenuItem>
-							<MenuItem value={30}>Thirty</MenuItem>
+							{selectEvent.length > 0 ? (
+								selectEvent.map(device => {
+									return (
+										<MenuItem key={device.id} value={device.id}>
+											{device.name}
+										</MenuItem>
+									);
+								})
+							) : (
+								<MenuItem value={1}>No content</MenuItem>
+							)}
 						</Select>
 					</FormControl>
 					<FormControl variant="outlined" className={classes.formControl}>
@@ -79,7 +153,7 @@ export default function EventRoute() {
 						<Select
 							labelId="Periodo"
 							id="Periodo"
-							value={dispositivo || 'Hoy'}
+							value={dispositivo}
 							onChange={handleDevice}
 							label="Periodo"
 						>
@@ -99,39 +173,73 @@ export default function EventRoute() {
 						<Select
 							labelId="Evento"
 							id="Evento"
-							value={event || 'Todos los eventos'}
+							value={event}
 							onChange={handleEvent}
 							label="Tipo de evento"
+							multiple
 						>
-							<MenuItem value="All">Todos los dispositivos</MenuItem>
-							<MenuItem value="Input">Dispositivos de entrada</MenuItem>
-							<MenuItem value="Uknown">El estado del dispositivo es Desconocido</MenuItem>
-							<MenuItem value="Offline">El dispositivo está fuera de línea</MenuItem>
-							<MenuItem value="Inactive">Dispositivo Inactivo</MenuItem>
-							<MenuItem value="Moving">Dispositivo está en movimiento</MenuItem>
-							<MenuItem value="Stop">El dispositivo se ha detenido</MenuItem>
-							<MenuItem value="Speed">El dispositivo ha excedido el limite de velocidad</MenuItem>
-							<MenuItem value="Lost">Perdida de combustible</MenuItem>
-							<MenuItem value="Command">Resultado de comando</MenuItem>
-							<MenuItem value="GeofenceIn">El dispositivo ha entrado en la geocerca</MenuItem>
-							<MenuItem value="GeofenceOut">El dispositivo ha salido de la geocerca</MenuItem>
+							<MenuItem value="allEvents">Todos los dispositivos</MenuItem>
+							<MenuItem value="deviceOnline">Dispositivos de entrada</MenuItem>
+							<MenuItem value="deviceUnknown">El estado del dispositivo es Desconocido</MenuItem>
+							<MenuItem value="deviceOffline">El dispositivo está fuera de línea</MenuItem>
+							<MenuItem value="deviceInactive">Dispositivo Inactivo</MenuItem>
+							<MenuItem value="deviceMoving">Dispositivo está en movimiento</MenuItem>
+							<MenuItem value="deviceStopped">El dispositivo se ha detenido</MenuItem>
+							<MenuItem value="deviceOverspeed">
+								El dispositivo ha excedido el limite de velocidad
+							</MenuItem>
+							<MenuItem value="deviceFuelDrop">Perdida de combustible</MenuItem>
+							<MenuItem value="commandResult">Resultado de comando</MenuItem>
+							<MenuItem value="geofenceEnter">El dispositivo ha entrado en la geocerca</MenuItem>
+							<MenuItem value="geofenceExit">El dispositivo ha salido de la geocerca</MenuItem>
+							<MenuItem value="alarm">Alarma</MenuItem>
+							<MenuItem value="ignitionOn">Encendido ON</MenuItem>
+							<MenuItem value="ignitionOff">Encendido OFF</MenuItem>
+							<MenuItem value="maintenance">Requiere Mantenimiento</MenuItem>
+							<MenuItem value="textMessage">Mensaje de texto recibido</MenuItem>
+							<MenuItem value="driverChanged">El conductor ha cambiado</MenuItem>
 						</Select>
 					</FormControl>
 				</div>
+				<div>
+					{dispositivo === 'Personalizado' && (
+						<>
+							<TextField
+								margin="normal"
+								variant="filled"
+								label="Desde"
+								type="datetime-local"
+								value={from.format(moment.HTML5_FMT.DATETIME_LOCAL)}
+								onChange={e => setFrom(moment(e.target.value, moment.HTML5_FMT.DATETIME_LOCAL))}
+								fullWidth
+							/>
+							<TextField
+								margin="normal"
+								variant="filled"
+								label="Desde"
+								type="datetime-local"
+								value={to.format(moment.HTML5_FMT.DATETIME_LOCAL)}
+								onChange={e => setTo(moment(e.target.value, moment.HTML5_FMT.DATETIME_LOCAL))}
+								fullWidth
+							/>
+						</>
+					)}
+				</div>
 				<FormControl className={classes.buttons}>
-					<Button variant="outlined" color="primary">
+					<Button variant="outlined" color="primary" disabled={!route} onClick={() => handleMostrar()}>
 						Mostrar
 					</Button>
-					<Button variant="outlined" color="primary">
+					<Button variant="outlined" color="primary" disabled={!route} onClick={() => handleExportar()}>
 						Exportar
 					</Button>
-					<Button variant="outlined" color="primary">
+					<Button variant="outlined" color="primary" disabled={!route}>
 						Reporte por correo
 					</Button>
+					<div className={classes.load}>{exportLoader && <CircularProgress />}</div>
 				</FormControl>
 			</div>
 			<div className={classes.containTable}>
-				<EventTable columns={columns} />
+				<EventTable rows={rows} loading={loading} />
 			</div>
 		</div>
 	);

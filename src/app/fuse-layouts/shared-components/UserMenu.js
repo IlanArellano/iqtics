@@ -7,8 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import useUser from 'app/main/iqtrackComponents/hooks/useUser';
 import UserModal from '../../main/iqtrackComponents/userOptions';
 
@@ -22,10 +21,16 @@ function UserMenu(props) {
 	const classes = useStyles();
 	const [open, setOpen] = useState(false);
 	const [display, setDisplay] = useState('');
+	const [info, setInfo] = useState({
+		name: 'Nombre',
+		rol: 'Rol'
+	});
 
 	const [userMenu, setUserMenu] = useState(null);
-	const history = useHistory();
-	const { logout } = useUser();
+
+	const { logout, getToken, getUserPassword } = useUser();
+	const userInfoDecoded = window.atob(getToken());
+	const getUser = userInfoDecoded.split(':');
 
 	const userMenuClick = event => {
 		setUserMenu(event.currentTarget);
@@ -42,8 +47,22 @@ function UserMenu(props) {
 
 	const handleLogOut = () => {
 		logout();
-		history.push('/login');
+		window.location.href = '/login';
 	};
+
+	useEffect(() => {
+		async function getInfo() {
+			const res = await getUserPassword();
+			if (res) {
+				setInfo({
+					name: res.name,
+					rol: res.rol
+				});
+			}
+		}
+		getInfo();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<>
@@ -51,10 +70,10 @@ function UserMenu(props) {
 			<Button className="min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6" onClick={userMenuClick}>
 				<div className="hidden md:flex flex-col mx-4 items-end">
 					<Typography component="span" className="font-semibold flex" color="textSecondary">
-						Nombre
+						{info.name}
 					</Typography>
 					<Typography className="text-11 font-medium capitalize" color="textSecondary">
-						Rol
+						{info.rol}
 					</Typography>
 				</div>
 				<Icon className={classes.color}>arrow_drop_down</Icon>

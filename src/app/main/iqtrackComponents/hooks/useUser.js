@@ -15,6 +15,35 @@ export default function useUser() {
 		[setUserToken, userToken]
 	);
 
+	const getUserPassword = async () => {
+		const userInfoDecoded = window.atob(userToken);
+		const getUser = userInfoDecoded.split(':');
+		if (getUser && getUser.length > 0) {
+			try {
+				const res = await fetch(`https://${process.env.REACT_APP_API_URL}/api/session`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					body: `email=${getUser[0]}&password=${getUser[1]}`
+				});
+				if (res.ok) {
+					const response = await res.json();
+					return {
+						name: response.name,
+						rol: response.administrator ? 'Administrador' : 'Usuario'
+					};
+				}
+				return null;
+			} catch (error) {
+				return {
+					error
+				};
+			}
+		}
+		return null;
+	};
+
 	const logout = useCallback(() => {
 		window.localStorage.removeItem('userToken');
 		setUserToken(null);
@@ -22,6 +51,7 @@ export default function useUser() {
 	return {
 		isLoggedIn: Boolean(userToken),
 		getToken,
+		getUserPassword,
 		login,
 		logout
 	};

@@ -14,7 +14,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { useState } from 'react';
 import clsx from 'clsx';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import _ from '@lodash';
 import useUser from 'app/main/iqtrackComponents/hooks/useUser';
@@ -51,7 +51,6 @@ const defaultValues = {
 
 function Login3Page() {
 	const { login } = useUser();
-	const history = useHistory();
 	const [loginError, setLoginError] = useState('');
 	const classes = useStyles();
 
@@ -83,7 +82,7 @@ function Login3Page() {
 		console.log(querySession);
 		if (querySession.ok) {
 			login({ user: keys.email, password: keys.password });
-			history.push('/app/iqtics/map');
+			window.location.href = '/app/iqtics/map';
 		} else if (!querySession.ok && querySession.status === 401) {
 			setLoginError('Usuario o contraseña no válidos');
 		} else {
