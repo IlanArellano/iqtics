@@ -3,20 +3,20 @@ import Hidden from '@material-ui/core/Hidden';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import { useRef, useState } from 'react';
-import IqMap from '../../../iqtrackComponents/map';
+import { useRef, useContext } from 'react';
+import Map from '../../../iqtrackComponents/map';
 import SidebarHeader from '../../../iqtrackComponents/SidebarHeader';
 import SidebarCarsContent from '../../../iqtrackComponents/SidebarCarsContent';
+import DeviceContext from '../../../iqtrackComponents/context/devices';
 
 const useStyles = makeStyles({
 	layoutRoot: {}
 });
 
 function SimpleLeftSidebar2Sample() {
+	const { devices, positions } = useContext(DeviceContext);
 	const classes = useStyles();
 	const pageLayout = useRef(null);
-	const [display, setDisplay] = useState('');
-	const [open, setOpen] = useState(false);
 
 	const ToggleButton = () => {
 		return (
@@ -34,12 +34,13 @@ function SimpleLeftSidebar2Sample() {
 		);
 	};
 
+	if (devices.length === 0) return null;
 	return (
 		<FusePageSimple
 			classes={{
 				root: classes.layoutRoot
 			}}
-			content={<IqMap ToggleSidebar={ToggleButton} />}
+			content={<Map pos={positions} devices={devices} />}
 			leftSidebarHeader={
 				<div className="p-24">
 					<SidebarHeader />
@@ -47,7 +48,7 @@ function SimpleLeftSidebar2Sample() {
 			}
 			leftSidebarContent={
 				<div className="p-24">
-					<SidebarCarsContent />
+					<SidebarCarsContent devices={devices} />
 				</div>
 			}
 			innerScroll

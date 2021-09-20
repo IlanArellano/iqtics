@@ -1,7 +1,7 @@
 const getUser = window.localStorage.getItem('userToken') ? window.localStorage.getItem('userToken') : null;
 
 export default async function getDevices() {
-	const res = await fetch(`https://${process.env.REACT_APP_API_URL}/api/devices`, {
+	const res = await fetch(`${process.env.REACT_APP_API_URL}/api/devices`, {
 		headers: {
 			Authorization: `Basic ${getUser}`
 		}

@@ -34,7 +34,7 @@ function Logo() {
 	const { getToken } = useUser();
 
 	useEffect(() => {
-		fetch(`https://${process.env.REACT_APP_API_URL}/api/server`, {
+		fetch(`${process.env.REACT_APP_API_URL}/api/server`, {
 			method: 'GET',
 			headers: new Headers({
 				Authorization: `Basic ${getToken()}`,

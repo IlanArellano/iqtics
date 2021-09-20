@@ -72,7 +72,7 @@ function Login3Page() {
 			formBody.push(`${encodedKey}=${encodedValue}`);
 		}
 		formBody = formBody.join('&');
-		const querySession = await fetch(`https://${process.env.REACT_APP_API_URL}/api/session`, {
+		const querySession = await fetch(`${process.env.REACT_APP_API_URL}/api/session`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'

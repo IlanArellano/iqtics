@@ -20,7 +20,7 @@ export default function useUser() {
 		const getUser = userInfoDecoded.split(':');
 		if (getUser && getUser.length > 0) {
 			try {
-				const res = await fetch(`https://${process.env.REACT_APP_API_URL}/api/session`, {
+				const res = await fetch(`${process.env.REACT_APP_API_URL}/api/session`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'

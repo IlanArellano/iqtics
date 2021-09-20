@@ -7,7 +7,7 @@ export default async function getReportFilter({ endPoint, deviceId, from, to, ma
 	if (event && Array.isArray(event)) {
 		event.forEach(it => query.append('type', it));
 	}
-	const res = await fetch(`https://${process.env.REACT_APP_API_URL}/api/reports/${endPoint}?${query.toString()}`, {
+	const res = await fetch(`${process.env.REACT_APP_API_URL}/api/reports/${endPoint}?${query.toString()}`, {
 		headers: {
 			Authorization: `Basic ${getUser}`,
 			Accept:

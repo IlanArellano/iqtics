@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Popover from '@material-ui/core/Popover';
 import useUser from './hooks/useUser';
+import getVehicles from './services/vehicles';
 
 const useStyles = makeStyles(theme => ({
 	color: {
@@ -16,29 +17,21 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-export default function SidebarCarsContent() {
+export default function SidebarCarsContent({ devices }) {
 	const { getToken } = useUser();
+	const token = getToken();
 	const classes = useStyles();
 	const [userMenu, setUserMenu] = useState(null);
-	const [devices, setDevices] = useState([]);
 
-	useEffect(() => {
-		fetch(`https://${process.env.REACT_APP_API_URL}/api/devices`, {
-			headers: new Headers({
-				Authorization: `Basic ${getToken()}`,
-				'Content-Type': 'application/json'
-			})
-		})
-			.then(res => {
-				if (res.ok && res.status === 200) {
-					res.json()
-						.then(response => setDevices(response))
-						.catch(console.log);
-				}
-			})
-			.catch(console.log);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	/* useEffect(() => {
+		// eslint-disable-next-line func-names
+		(async function () {
+			const res = await getVehicles(token);
+			if (res !== null && !res.error) {
+				setDevices(res);
+			}
+		})();
+	}, [token]);*/
 
 	const userMenuClick = event => {
 		setUserMenu(event.currentTarget);
@@ -49,7 +42,7 @@ export default function SidebarCarsContent() {
 	};
 	return (
 		<>
-			{devices.length > 0 ? (
+			{devices && devices.length > 0 ? (
 				devices.map(device => {
 					return (
 						<div className="flex justify-between items-center" key={device.id}>
